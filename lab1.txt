@@ -1,0 +1,109 @@
+#!/bin/bash
+
+#1
+rm ~/list_link
+rm -r ~/test
+cd ~
+mkdir test
+#2
+cd test
+counter1=0
+counter2=0
+for FILE in /etc/* ;
+do
+	if [[ -d "$FILE" ]] ; then
+		echo "$FILE/" >> list
+		let counter1=$counter1+1
+	else
+		echo "$FILE" >> list
+	fi
+done
+for FILE in /etc/.* ;
+do
+	if [[ -d "$FILE" ]] ; then
+		echo "$FILE/" >> list
+	else
+		echo "$FILE" >> list
+		let counter2=$counter2+1
+	fi
+done
+#3
+echo "Directories " $counter1 >> list
+echo "Hidden Files " $counter2 >> list
+#4
+mkdir links
+#5
+ln ~/test/list ~/test/links/list_hlink
+#6
+ln -s ~/test/list ~/test/links/list_slink
+#7
+echo "*list"
+ls -l ~/test/list | cut -d " " -f2
+echo "*list_hlink"
+ls -l ~/test/links/list_hlink | cut -d " " -f2
+echo "*list_slinkls"
+ls -l ~/test/links/list_slink | cut -d " " -f2
+#8
+wc -l ~/test/list | cut -d " " -f1 >> ~/test/links/list_hlink
+#9
+if cmp ~/test/links/list_hlink ~/test/links/list_slink;
+then
+	echo "YES"
+fi
+#10
+mv ~/test/list ~/test/list1
+#11
+if cmp ~/test/links/list_hlink ~/test/links/list_slink;
+then
+	echo "YES"
+fi
+#12
+ln ~/test/list1 ~/list_link
+#13
+find /etc -name "*.conf" >~/list_conf
+#14
+find /etc -name "*.d" >~/list_d
+#15
+cat ~/list_conf ~/list_d > ~/list_conf_d
+#16
+mkdir ~/test/.sub
+#17
+cp ~/list_conf_d ~/test/.sub
+#18
+cp -b ~/list_conf_d ~/test/.sub
+#19
+find ~/test/ -name "*"
+#20
+man man >~/man.txt
+#21
+split -b 1000 ~/man.txt "splitn"
+#22
+mkdir ~/test/man.dir
+#23
+mv split* ~/test/man.dir
+#24
+cat ~/test/man.dir/splitn* >~/test/man.dir/man.txt
+#25
+if cmp ~/man.txt ~/test/man.dir/man.txt
+then
+	echo "YES"
+fi
+#26
+echo "214332" >~/t.txt
+echo "555555" >>~/t.txt
+cat ~/man.txt >>~/t.txt
+echo "qqqq" >>~/t.txt
+echo "zzzzw" >>~/t.txt
+cat ~/t.txt >~/man.txt
+rm ~/t.txt
+#27
+diff -u ~/man.txt ~/test/man.dir/man.txt > ~/qpatch
+#28
+mv ~/qpatch ~/test/man.dir/
+#29
+patch ~/test/man.dir/man.txt ~/test/man.dir/qpatch
+#30
+if cmp -s ~/man.txt ~/test/man.dir/man.txt;
+then
+	echo "YES"
+fi
